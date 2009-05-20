@@ -1,1 +1,17 @@
 * text=auto !eol
+/.cproject -text
+/.project -text
+.settings/org.eclipse.core.runtime.prefs -text
+/Makefile -text
+/SConscript -text
+include/ISTable.h -text
+include/ITTable.h -text
+include/TTable.h -text
+include/TableError.h -text
+include/TableFile.h -text
+lib/.cvsignore -text
+obj/.cvsignore -text
+src/ISTable.C -text
+src/ITTable.C -text
+src/TTable.C -text
+src/TableFile.C -text
