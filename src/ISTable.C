@@ -245,8 +245,10 @@ void ISTable::AddColumn(const string& colName, const vector<string>& col)
 
     if ((GetNumRows() != 0) && (col.size() > GetNumRows()))
     {
-        throw out_of_range("Column size greater than number of rows in "\
-          " ISTable::AddColumn");
+        throw out_of_range("In table \"" + _name + "\", size of column \"" +
+          colName + "\", " + String::IntToString(col.size()) + ", is greater "\
+          "than the number of rows, " + String::IntToString(GetNumRows()) +
+          ", generated at: ISTable::AddColumn");
     }
 
     InsertColumn(colName, _colNames.size(), col);
