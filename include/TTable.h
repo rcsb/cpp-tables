@@ -21,6 +21,8 @@
 #include "TableError.h"
 #include "Serializer.h"
 
+#define TTABLE_COLUMN_DELETE_AS_REMOVE
+
 
 /**
 ** \class TTable
