@@ -540,8 +540,11 @@ void ISTable::DeleteColumn(const string& colName)
     {
         unsigned int colIndex = GetColumnIndex(colName);
 
-        for (unsigned int tableI = 0; tableI < _ittables.size(); ++tableI)
-            _ittables[tableI].DeleteColumn(colIndex);
+        if (GetNumRows() != 0)
+        {
+            for (unsigned int tableI = 0; tableI < _ittables.size(); ++tableI)
+                _ittables[tableI].DeleteColumn(colIndex);
+        }
 
         for (unsigned int i = 0; i < _indexNames.size(); ++i)
         {
