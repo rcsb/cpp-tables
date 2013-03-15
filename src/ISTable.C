@@ -775,10 +775,18 @@ void ISTable::DeleteRow(const unsigned int rowIndex)
 
     _ittables[rowLoc.first].DeleteRow(rowLoc.second);
 
-    if ((_ittables[rowLoc.first].GetNumRows() == 0) && (rowLoc.first != 0))
+    if (_ittables[rowLoc.first].GetNumRows() == 0)
         _ittables.erase(_ittables.begin() + rowLoc.first);
 
     --_numRows;
+
+    if (_ittables.empty())
+    {
+        // Must have at least one internal table 
+        ITTable firstTable(_orient);
+
+        _ittables.push_back(firstTable);
+    }
 
     // VLAD - IT CAN BE SMARTER THAN THIS, BUT LEAVE IT FOR NOW
     // SINCE INSERTS ARE REALLY RARE
