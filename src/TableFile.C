@@ -24,6 +24,7 @@ using std::vector;
 using std::make_pair;
 using std::cout;
 using std::endl;
+//using std::cerr;
 
 
 const string TableFile::_version("V1");
@@ -240,6 +241,7 @@ ISTable& Block::GetTable(const string& name)
 ISTable* Block::GetTablePtr(const string& name)
 {
 
+    //// cerr << "In GetTablePtr(name): " << name << endl;
     // VLAD - IMPROVEMENT
     // SHOULD WE THROW EXCEPTION NotFoundException rather than returning NULL
 
@@ -281,11 +283,15 @@ void Block::DeleteTable(const string& name)
           "Block::DeleteTable");
     }
 
-    ISTable* isTableP = &(_tables[tableIndex]);
-
-    if (isTableP != NULL)
+    if (_tables.is_read(name))
     {
-        delete isTableP;
+        ISTable* isTableP = &(_tables[tableIndex]);
+
+        if (isTableP != NULL)
+        {
+            delete isTableP;
+        }
+
     }
 
     _tables.erase(name);
@@ -326,12 +332,19 @@ void Block::WriteTable(ISTable* isTableP)
     if (tableIndex != _tables.size())
     {
         // Found it
-        ISTable* currIsTableP = &(_tables[tableIndex]);
-
-        if (currIsTableP != isTableP)
+        if (_tables.is_read(isTableP->GetName()))
         {
-            delete currIsTableP;
-            _tables.set(isTableP);  
+            ISTable* currIsTableP = &(_tables[tableIndex]);
+
+            if (currIsTableP != isTableP)
+            {
+                delete currIsTableP;
+                _tables.set(isTableP);  
+            }
+        }
+        else
+        {
+                _tables.set(isTableP);
         }
     }
     else 
@@ -354,18 +367,24 @@ void Block::Print()
 ISTable* Block::_GetTablePtr(const unsigned int tableIndex)
 {
 
-    if (&(_tables[tableIndex]) != NULL)
+    string name = _tables.get_name(tableIndex);
+
+    if (_tables.is_read(name))
+    //if (&(_tables[tableIndex]) != NULL)
     {
+        //// cerr << "Is NOT NULL " << endl;
         // Table is already in memory. Just return the pointer to it.
         return &(_tables[tableIndex]);
     }
     else
     {
+        //// cerr << "Is NULL first" << endl;
         // For write or virtual mode, there are no tables on the disk.
         if ((_fileMode == CREATE_MODE) || (_fileMode == VIRTUAL_MODE))
             return(NULL);
 
-        string name = _tables.get_name(tableIndex);
+        //// cerr << "Is NULL second" << endl;
+        //string name = _tables.get_name(tableIndex);
 
         ISTable* isTableP = new ISTable(name);
 
@@ -417,7 +436,10 @@ TableFile::~TableFile()
         for (unsigned int tableI = 0; tableI < _blocks[blockI]._tables.size();
           ++tableI)
         {
-            if (&(_blocks[blockI]._tables[tableI]) != NULL)
+            string name = _blocks[blockI]._tables.get_name(tableI);
+
+            if (_blocks[blockI]._tables.is_read(name))
+            //if (&(_blocks[blockI]._tables[tableI]) != NULL)
             {
                 delete &(_blocks[blockI]._tables[tableI]);
             }
@@ -559,7 +581,10 @@ void TableFile::Flush()
         for (unsigned int tableI = 0; tableI < _blocks[blockI]._tables.size();
           ++tableI)
         {
-            if (&(_blocks[blockI]._tables[tableI]) == NULL)
+            string name = _blocks[blockI]._tables.get_name(tableI);
+
+            if (!_blocks[blockI]._tables.is_read(name))
+            //if (&(_blocks[blockI]._tables[tableI]) == NULL)
             {
                 continue;
             }
@@ -624,8 +649,12 @@ void TableFile::Serialize(const string& fileName)
         for (unsigned int tableI = 0; tableI < _blocks[blockI]._tables.size();
           ++tableI)
         {
-            if (&(_blocks[blockI]._tables[tableI]) == NULL)
+            string name = _blocks[blockI]._tables.get_name(tableI);
+
+            if (!_blocks[blockI]._tables.is_read(name))
+            //if (&(_blocks[blockI]._tables[tableI]) == NULL)
             {
+                //// cerr << "In Serialize" << endl;
                 _GetTablePtr(blockI, tableI);
             }
         }
@@ -780,19 +809,24 @@ void TableFile::_GetNumTablesInBlocks(vector<UInt32>& numTablesInBlocks)
 ISTable* TableFile::_GetTablePtr(const unsigned int blockIndex,
   const unsigned int tableIndex)
 {
+ 
+    //// cerr << "In GetTablePtr(blind, tblind): " << endl;
+    string name = _blocks[blockIndex]._tables.get_name(tableIndex);
 
-    if (&(_blocks[blockIndex]._tables[tableIndex]) != NULL)
+    if (_blocks[blockIndex]._tables.is_read(name))
+    //if (&(_blocks[blockIndex]._tables[tableIndex]) != NULL)
     {
         // Table is already in memory. Just return the pointer to it.
         return &(_blocks[blockIndex]._tables[tableIndex]);
     }
     else
     {
+        //// cerr << "In GetTablePtr(blind, tblind): Is NULL first" << endl;
         // For write or virtual mode, there are no tables on the disk.
         if ((_fileMode == CREATE_MODE) || (_fileMode == VIRTUAL_MODE))
             return(NULL);
 
-        string name = _blocks[blockIndex]._tables.get_name(tableIndex);
+        //// cerr << "In GetTablePtr(blind, tblind): Is NULL second" << endl;
 
         ISTable* tableP = new ISTable(name);
 
