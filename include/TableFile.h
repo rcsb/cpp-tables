@@ -173,11 +173,6 @@ class Block
     ISTable& AddTable(const std::string& name = string(),
       const Char::eCompareType colCaseSense = Char::eCASE_SENSITIVE);
 
-    /**
-    **  Utility method, not part of users public API, and will soon be removed.
-    */
-    void AddTable(const string& name, const int indexInFile = 0,
-      ISTable* isTableP = NULL);
 
     /**
     **  Changes the name of a table in the data block.
@@ -324,6 +319,14 @@ class Block
     */
     void Print();
 
+    /**
+    **  Utility method, not part of users public API, and will soon be removed.
+    *
+    *  JDW rename this method to resolve llvm ambiguity issues with public method signature -
+    */
+    void _AddTable(const string& name, const int indexInFile = 0,
+      ISTable* isTableP = NULL);
+
   private:
     string _name;
     eFileMode _fileMode;
@@ -333,6 +336,8 @@ class Block
     Block& operator=(const Block& inBlock);
 
     ISTable* _GetTablePtr(const unsigned int tableIndex);
+
+
 };
 
 
@@ -571,7 +576,7 @@ class TableFile
     **
     **  \return String that contains the internally assigned data block name.
     **    This value is different from \e blockName, if data block with
-    **    the name \e blockName, already exists when this method is invoked. 
+    **    the name \e blockName, already exists when this method is invoked.
     **
     **  \pre None
     **
@@ -606,7 +611,7 @@ class TableFile
     **
     **  \return String that contains the internally assigned data block name.
     **    This value is different from \e newBlockName, if data block with
-    **    the name \e newBlockName, already exists when this method is invoked. 
+    **    the name \e newBlockName, already exists when this method is invoked.
     **
     **  \pre Table file must have at least one data block.
     **  \pre Data block with name \e oldBlockName must be present
@@ -626,7 +631,7 @@ class TableFile
     **
     **  \return String that contains the internally assigned data block name.
     **    This value is different from \e newBlockName, if data block with
-    **    the name \e newBlockName, already exists when this method is invoked. 
+    **    the name \e newBlockName, already exists when this method is invoked.
     **
     **  \pre Table file must have at least one data block.
     **
@@ -696,7 +701,7 @@ class TableFile
     Char::eCompareType _caseSense;
 
     // Indicates the current status of the object
-    unsigned int _statusInd;  
+    unsigned int _statusInd;
 
     mapped_ptr_vector<Block, StringLess> _blocks;
 
@@ -745,7 +750,7 @@ inline void Block::SetName(const string& name)
 inline const string& Block::GetName() const
 {
     return _name;
-} 
+}
 
 
 inline string TableFile::GetFileName(void)
@@ -771,7 +776,7 @@ inline unsigned int TableFile::GetStatusInd(void)
     return _statusInd;
 }
 
-   
+
 inline unsigned int TableFile::GetNumBlocks()
 {
     return _blocks.size();
