@@ -7,7 +7,7 @@
 /*!
 ** \file TableFile.C
 **
-** \brief Implementation file for Block and TableFile classes. 
+** \brief Implementation file for Block and TableFile classes.
 */
 
 
@@ -41,7 +41,7 @@ Block::Block(const string& name, Serializer* ser,
 
 Block::Block(const Block& block)
 {
- 
+
     _name = block._name;
     _fileMode = block._fileMode;
     _ser = block._ser;
@@ -122,14 +122,14 @@ ISTable& Block::AddTable(const std::string& name,
 }
 
 
-void Block::AddTable(const string& name, const int indexInFile,
+void Block::_AddTable(const string& name, const int indexInFile,
   ISTable* isTableP)
 {
 
     if (name.empty())
     {
         throw EmptyValueException("Empty table name",
-          "Block::AddTable");
+          "Block::_AddTable");
     }
 
     _tables.push_back(name, indexInFile);
@@ -253,7 +253,7 @@ ISTable* Block::GetTablePtr(const string& name)
     {
         return(NULL);
     }
- 
+
     return(_GetTablePtr(tableIndex));
 
 }
@@ -337,7 +337,7 @@ void Block::WriteTable(ISTable* isTableP)
             if (currIsTableP != isTableP)
             {
                 delete currIsTableP;
-                _tables.set(isTableP);  
+                _tables.set(isTableP);
             }
         }
         else
@@ -345,10 +345,10 @@ void Block::WriteTable(ISTable* isTableP)
                 _tables.set(isTableP);
         }
     }
-    else 
+    else
     {
         // Not found. Add new table to the block
-        AddTable(isTableP->GetName(), 0, isTableP);
+        _AddTable(isTableP->GetName(), 0, isTableP);
     }
 
 }
@@ -566,7 +566,7 @@ void TableFile::Flush()
           "TableFile::Flush");
     }
 
-    // Write all modified tables 
+    // Write all modified tables
     for (unsigned int blockI = 0; blockI < _blocks.size(); ++blockI)
     {
         for (unsigned int tableI = 0; tableI < _blocks[blockI]._tables.size();
@@ -603,7 +603,7 @@ void TableFile::Flush()
         {
             name = _blocks[blockI]._tables.get_name(tableI);
             indices = _blocks[blockI]._tables.get_indices(name);
- 
+
             tableLocs.push_back(indices.second);
         }
     }
@@ -723,7 +723,7 @@ void TableFile::PrintHeaderInfo()
     {
         cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++"\
           "+++++++++++++++++" << endl;
-        cout << "Block [" << i << "] " << _blocks[i].GetName() << endl; 
+        cout << "Block [" << i << "] " << _blocks[i].GetName() << endl;
     }
 
     for (unsigned int blockI = 0; blockI < _blocks.size(); ++blockI)
@@ -732,10 +732,10 @@ void TableFile::PrintHeaderInfo()
         {
             cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++"\
               "+++++++++++++++++" << endl;
-            cout << "Table [" << i << "] " << endl; 
-            cout << "block = " << _blocks[blockI].GetName() << endl; 
-            cout << "name = " << _blocks[blockI]._tables[i].GetName() << endl; 
-            cout << "indexInMemory = " << i << endl; 
+            cout << "Table [" << i << "] " << endl;
+            cout << "block = " << _blocks[blockI].GetName() << endl;
+            cout << "name = " << _blocks[blockI]._tables[i].GetName() << endl;
+            cout << "indexInMemory = " << i << endl;
         }
     }
     cout << "TableFile::PrintHeaderInfo*TableFile::PrintHeaderInfo*"\
@@ -759,7 +759,7 @@ void TableFile::_SetStatusInd(const string& blockName)
         {
             // Set the flag that duplicate blocks are found
             _statusInd |= eDUPLICATE_BLOCKS;
-        } // More than a space symbol prior to a hash 
+        } // More than a space symbol prior to a hash
         else
         {
             // Set the flag that empty block name is found
@@ -797,7 +797,7 @@ void TableFile::_GetNumTablesInBlocks(vector<UInt32>& numTablesInBlocks)
 ISTable* TableFile::_GetTablePtr(const unsigned int blockIndex,
   const unsigned int tableIndex)
 {
- 
+
     string name = _blocks[blockIndex]._tables.get_name(tableIndex);
 
     if (_blocks[blockIndex]._tables.is_read(name))
@@ -940,7 +940,7 @@ void TableFile::_ReadFileIndexVersion1()
           "TableFile::_ReadFileIndexVersion1");
     }
 
-    where -= 5; 
+    where -= 5;
 
     vector<string> blockNames;
     _f->ReadStrings(blockNames, where);
@@ -968,7 +968,7 @@ void TableFile::_ReadFileIndexVersion1()
          for (unsigned int tableNumI = 0; tableNumI <
            (unsigned int)numTablesInBlocks[blockI]; ++tableNumI, ++tableI)
          {
-             _blocks[blockI].AddTable(tableNames[tableI], locs[tableI]);
+             _blocks[blockI]._AddTable(tableNames[tableI], locs[tableI]);
          }
     } // For all blocks
 
@@ -1037,7 +1037,7 @@ void TableFile::_ReadFileIndexVersion0()
         }
 
         if (bOrder)
-            delete[] bOrder; 
+            delete[] bOrder;
         bOrder = NULL;
     }
 
@@ -1045,13 +1045,13 @@ void TableFile::_ReadFileIndexVersion0()
     {
         for (i = 0; i < numTables; i++)
         {
-            /* Find block index from table Id. */ 
+            /* Find block index from table Id. */
             unsigned int blockIndex = GetBlockIndexFromTableId(tableIds[i]);
 
-            /* Find table name from table Id. */ 
+            /* Find table name from table Id. */
             string tableName = GetTableNameFromTableId(tableIds[i]);
 
-            _blocks[blockIndex].AddTable(tableName, locs[i]);
+            _blocks[blockIndex]._AddTable(tableName, locs[i]);
         }
     }
     else
@@ -1063,15 +1063,15 @@ void TableFile::_ReadFileIndexVersion0()
 	}
 	for (i = 0; i < numTables; i++)
         {
-            /* Find block index from table Id. */ 
+            /* Find block index from table Id. */
             unsigned int blockIndex = GetBlockIndexFromTableId(tableIds[i]);
 
-            /* Find table name from table Id. */ 
+            /* Find table name from table Id. */
             string tableName = GetTableNameFromTableId(tableIds[tOrder[i]]);
 
-            _blocks[blockIndex].AddTable(tableName, locs[tOrder[i]]);
+            _blocks[blockIndex]._AddTable(tableName, locs[tOrder[i]]);
         }
-	if (tOrder) delete[] tOrder; 
+	if (tOrder) delete[] tOrder;
 	tOrder = NULL;
     }
 
@@ -1090,7 +1090,7 @@ void TableFile::_WriteFileIndex(Serializer* ser,
 
     vector<string> blockNames;
     GetBlockNames(blockNames);
- 
+
     vector<UInt32> numTablesInBlocks;
     _GetNumTablesInBlocks(numTablesInBlocks);
 
