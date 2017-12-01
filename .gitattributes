@@ -3,6 +3,7 @@
 /.project -text
 .settings/org.eclipse.core.runtime.prefs -text
 /Makefile -text
+/README.txt -text
 /SConscript -text
 include/ISTable.h -text
 include/ITTable.h -text
