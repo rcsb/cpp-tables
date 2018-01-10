@@ -33,9 +33,9 @@ typedef std::multimap<std::string, unsigned int, StringLess> tIndex;
 
 /**
 **  \class ISTable
-** 
+**
 **  \brief Public class that respresents a two-dimensional table of strings.
-** 
+**
 **  This class represents a two-dimensional table of cells. Each cell holds
 **  a text string. The table is identified by its name. Rows are horizontal
 **  table entities identified by row indices, which are unsigned integers
@@ -107,7 +107,7 @@ class ISTable
     };
 #endif
 
-    static const unsigned char DT_STRING_VAL = 1; 
+    static const unsigned char DT_STRING_VAL = 1;
     static const unsigned char DT_INTEGER_VAL = 2;
     // static const unsigned char DT_DOUBLE_VAL = 3;
 
@@ -117,7 +117,7 @@ class ISTable
     static const unsigned char CASE_INSENSE = 0x01;
     // Sets string comparison to be sensitive to whitespace
     static const unsigned char W_SPACE_SENSE = 0x00;
-    // Sets string comparison to ignore repeating whitspace.  
+    // Sets string comparison to ignore repeating whitspace.
     // Also ignores leading and trailing whitespace
     static const unsigned char W_SPACE_INSENSE = 0x02;
     // string datatype
@@ -127,18 +127,18 @@ class ISTable
     // VLAD FEATURE NOT WORKING double is not working, maybe integer. check it      // double datatype
     // static const unsigned char DT_DOUBLE  = DT_DOUBLE_VAL  << 4;
 
-    /** 
+    /**
     **  Constructs a table.
-    **  
+    **
     **  \param[in] colCaseSense - optional parameter that indicates case
     **    sensitivity of column names. Possible values are case sensitive and
     **    case in-sensitive. If not specified, a table with case sensitive
     **    column names is constructed.
-    **  
+    **
     **  \return Not applicable
-    **  
+    **
     **  \pre None
-    **  
+    **
     **  \post Constructed table has 0 rows and 0 columns.
     **  \post Constructed table is nameless (its name is an empty string).
     **
@@ -146,9 +146,9 @@ class ISTable
     */
     ISTable(const Char::eCompareType colCaseSense = Char::eCASE_SENSITIVE);
 
-    /** 
+    /**
     **  Constructs a table.
-    **  
+    **
     **  \param[in] orient - table orientation. Possible values are
     **    row-wise orientation (vectors of strings represent table rows) and
     **    column-wise orientation (vectors of strings represent table columns)
@@ -156,11 +156,11 @@ class ISTable
     **    sensitivity of column names. Possible values are case sensitive and
     **    case in-sensitive. If not specified, a table with case sensitive
     **    column names is constructed.
-    **  
+    **
     **  \return Not applicable
-    **  
+    **
     **  \pre None
-    **  
+    **
     **  \post Constructed table has 0 rows and 0 columns.
     **  \post Constructed table is nameless (its name is an empty string).
     **
@@ -169,19 +169,19 @@ class ISTable
     ISTable(eOrientation orient, const Char::eCompareType
       colCaseSense = Char::eCASE_SENSITIVE);
 
-    /** 
+    /**
     **  Constructs a table.
-    **  
+    **
     **  \param[in] name - the name of the table to be constructed
     **  \param[in] colCaseSense - optional parameter that indicates case
     **    sensitivity of column names. Possible values are case sensitive and
     **    case in-sensitive. If not specified, a table with case sensitive
     **    column names is constructed.
-    **  
+    **
     **  \return Not applicable
-    **  
+    **
     **  \pre None
-    **  
+    **
     **  \post Constructed table has 0 rows and 0 columns.
     **
     **  \exception: None
@@ -189,9 +189,9 @@ class ISTable
     ISTable(const std::string& name,
       const Char::eCompareType colCaseSense = Char::eCASE_SENSITIVE);
 
-    /** 
+    /**
     **  Constructs a table.
-    **  
+    **
     **  \param[in] name - the name of the table to be constructed
     **  \param[in] orient - table orientation. Possible values are
     **    row-wise orientation (vectors of strings represent table rows) and
@@ -200,11 +200,11 @@ class ISTable
     **    sensitivity of column names. Possible values are case sensitive and
     **    case in-sensitive. If not specified, a table with case sensitive
     **    column names is constructed.
-    **  
+    **
     **  \return Not applicable
-    **  
+    **
     **  \pre None
-    **  
+    **
     **  \post Constructed table has 0 rows and 0 columns.
     **
     **  \exception: None
@@ -244,7 +244,7 @@ class ISTable
     **  \exception: None
     */
     ~ISTable();
- 
+
     /**
     **  Copies a table to another table (assignment operator).
     **
@@ -298,7 +298,7 @@ class ISTable
     **
     **  \exception: None
     */
-    inline const std::string& GetName() const; 
+    inline const std::string& GetName() const;
 
     /**
     **  Changes the table name.
@@ -362,7 +362,7 @@ class ISTable
     bool IsColumnPresent(const std::string& colName);
 
     /**
-    **  Adds a column to the end of the table. 
+    **  Adds a column to the end of the table.
     **
     **  \param[in] colName - the name of the column to be added
     **  \param[in] col - optional parameter that contains the values which
@@ -470,7 +470,7 @@ class ISTable
       const std::vector<std::string>& col);
 
     /**
-    **  Retrieves column values. 
+    **  Retrieves column values.
     **
     **  \param[out] col - retrieved column values
     **  \param[in] colName - the name of the column which content is to be
@@ -490,7 +490,7 @@ class ISTable
     void GetColumn(std::vector<std::string>& col, const std::string& colName);
 
     /**
-    **  Retrieves column values in the specified row range. 
+    **  Retrieves column values in the specified row range.
     **
     **  \param[out] col - retrieved values
     **  \param[in] colName - the name of the column which content is to be
@@ -524,7 +524,7 @@ class ISTable
       const unsigned int fromRowIndex, unsigned int toRowIndex);
 
     /**
-    **  Retrieves column values in the specified rows. 
+    **  Retrieves column values in the specified rows.
     **
     **  \param[out] col - retrieved values
     **  \param[in] colName - the name of the column which content is to be
@@ -653,7 +653,7 @@ class ISTable
     **  \pre If table is empty and \e row is specified, the size of \e row must
     **    be less than or equal to the number of columns.
     **
-    **  \post The number of rows is increased by one. 
+    **  \post The number of rows is increased by one.
     **
     **  \exception EmptyContainerException - if table has no columns.
     **  \exception out_of_range - if table is not empty and size of \e row is
@@ -698,7 +698,7 @@ class ISTable
     **  \pre If table is empty and \e row is specified, the size of \e row must
     **    be less than or equal to the number of columns.
     **
-    **  \post The number of rows is increased by one. 
+    **  \post The number of rows is increased by one.
     **  \post Row indices, of the rows below the inserted row, are invalidated
     **    by being increased by one.
     **
@@ -730,7 +730,7 @@ class ISTable
     **    non-empty columns. This is in order to prevent creation of
     **    non-rectangular tables.
     **
-    **  \post None 
+    **  \post None
     **
     **  \exception out_of_range - if \e rowIndex is greater than or equal to
     **    the number of table rows.
@@ -741,7 +741,7 @@ class ISTable
       const std::vector<std::string>& row);
 
     /**
-    **  Retrieves row values. 
+    **  Retrieves row values.
     **
     **  \param[out] row - retrieved row values
     **  \param[in] rowIndex - index of the row which values are to be
@@ -1024,8 +1024,8 @@ class ISTable
     */
     void Search(std::vector<unsigned int>& res, const std::string& target,
       const std::string& colName, const unsigned int fromRowIndex = 0,
-      const eSearchDir searchDir = eFORWARD,
-      const eSearchType searchType = eEQUAL);
+      const eSearchDir searchDir = ISTable::eFORWARD,
+      const eSearchType searchType = ISTable::eEQUAL);
 
     /**
     **  Searches the columns for all occurrences of target values and
@@ -1060,12 +1060,12 @@ class ISTable
       const std::vector<std::string>& targets,
       const std::vector<std::string>& colNames,
       const unsigned int fromRowIndex = 0,
-      const eSearchDir searchDir = eFORWARD,
-      const eSearchType searchType = eEQUAL,
+      const eSearchDir searchDir = ISTable::eFORWARD,
+      const eSearchType searchType = ISTable::eEQUAL,
       const std::string& indexName = std::string());
 
     /**
-    **  Finds duplicate rows and, optionally, deletes them. 
+    **  Finds duplicate rows and, optionally, deletes them.
     **
     **  \param[out] duplRows - vector of pairs of indices, where each pair
     **    indicates a row and its duplicate row
@@ -1097,7 +1097,7 @@ class ISTable
     */
     void FindDuplicateRows(std::vector<std::pair<unsigned int,
       unsigned int> >& duplRows, const std::vector<std::string>& colNames,
-      const bool keepDuplRows, const eSearchDir searchDir = eFORWARD);
+      const bool keepDuplRows, const eSearchDir searchDir = ISTable::eFORWARD);
 
     /**
     **  Retrieves case sensitivity of column names.
@@ -1155,7 +1155,7 @@ class ISTable
     */
     // typeOfMerge is 0 for overwrite, 1 for overlap
     static ISTable* Merge(ISTable& firstTable, ISTable& secondTable,
-      unsigned int typeOfMerge = 0); 
+      unsigned int typeOfMerge = 0);
 
     /**
     **  Utility method, not part of users public API.
@@ -1264,7 +1264,7 @@ class ISTable
     Char::eCompareType _colCaseSense;
 
     mapped_vector<std::string, StringLess> _colNames;
- 
+
     std::vector<unsigned int> _precision;
     std::vector<unsigned char> _compare_opts;
 
