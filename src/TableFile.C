@@ -484,7 +484,7 @@ string TableFile::GetFirstBlockName()
     {
         return(_blocks[0].GetName());
     }
-    catch (out_of_range)
+    catch (out_of_range& exc)
     {
         throw EmptyContainerException("TableFile empty",
           "TableFile::GetFirstBlockName");

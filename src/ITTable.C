@@ -166,7 +166,7 @@ void ITTable::AppendToColumn(const unsigned int colIndex, const string& cell)
         {
             InsertEntry(GetNumRows() - 1);
         }
-        catch (AlreadyExistsException)
+        catch (AlreadyExistsException& exc)
         {
             if (_orient == eCOLUMN_WISE)
                 _ttable.DeleteTuple(colIndex);
@@ -241,7 +241,7 @@ void ITTable::ClearColumn(const unsigned int colIndex)
         for (unsigned int rowI = 0; rowI < GetNumRows(); ++rowI)
             UpdateIndicesOnCellUpdate(rowI, colIndex);
     }
-    catch (AlreadyExistsException)
+    catch (AlreadyExistsException& exc)
     {
         if (_orient == eCOLUMN_WISE)
             _ttable.FillTuple(colIndex, saveColumn);
@@ -323,7 +323,7 @@ unsigned int ITTable::InsertRow(const unsigned int rowIndex,
         {
             InsertEntry(rowIndex);
         }
-        catch (AlreadyExistsException)
+        catch (AlreadyExistsException& exc)
         {
             if (_orient == eCOLUMN_WISE)
                 _ttable.DeleteColumn(rowIndex);
@@ -359,7 +359,7 @@ void ITTable::FillRow(const unsigned int rowIndex, const vector<string>& row)
     {
         UpdateIndices(rowIndex);
     }
-    catch (AlreadyExistsException)
+    catch (AlreadyExistsException& exc)
     {
         if (_orient == eCOLUMN_WISE)
             _ttable.FillColumn(rowIndex, oldRow);
@@ -436,7 +436,7 @@ void ITTable::ClearRow(const unsigned int rowIndex)
     {
         UpdateIndices(rowIndex);
     }
-    catch (AlreadyExistsException)
+    catch (AlreadyExistsException& exc)
     {
         if (_orient == eCOLUMN_WISE)
             _ttable.FillColumn(rowIndex, oldRow);
@@ -1642,7 +1642,7 @@ void ITTable::FillColumn(const unsigned int colIndex,
         for (unsigned int rowI = 0; rowI < GetNumRows(); ++rowI)
             UpdateIndicesOnCellUpdate(rowI, colIndex);
     }
-    catch (AlreadyExistsException)
+    catch (AlreadyExistsException& exc)
     {
         if (_orient == eCOLUMN_WISE)
             _ttable.FillTuple(colIndex, saveColumn);
@@ -1711,7 +1711,7 @@ void ITTable::AppendToColumn(const unsigned int colIndex,
         {
             InsertEntry(rowI);
         }
-        catch (AlreadyExistsException)
+        catch (AlreadyExistsException& exc)
         {
             for (unsigned int delRowI = GetNumRows() - col.size(); delRowI <
               GetNumRows(); ++delRowI)
@@ -1756,7 +1756,7 @@ int ITTable::UpdateCell(const string& cell, const unsigned int colIndex,
     {
         UpdateIndicesOnCellUpdate(rowIndex, colIndex);
     }
-    catch (AlreadyExistsException)
+    catch (AlreadyExistsException& exc)
     {
         if (_orient == eCOLUMN_WISE)
             _ttable(colIndex, rowIndex) = saveCell;

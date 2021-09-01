@@ -225,7 +225,7 @@ bool ISTable::IsColumnPresent(const string& colName)
 
         return(true);
     }
-    catch (NotFoundException)
+    catch (NotFoundException& exc)
     {
         return(false);
     }
@@ -646,7 +646,7 @@ unsigned int ISTable::InsertRow(const unsigned int rowIndex,
 
                 ++_numRows;
             }
-            catch (AlreadyExistsException)
+            catch (AlreadyExistsException& exc)
             {
                 throw;
             }
@@ -1823,7 +1823,7 @@ ostream& operator<<(ostream& out, const ISTable& isTable)
             {
                 out << setw(10) << isTable(j, colNames[i]) << " ";
             }
-            catch (out_of_range)
+            catch (out_of_range& exc)
             {
                 break;
             }
