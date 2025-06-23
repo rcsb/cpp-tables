@@ -1107,6 +1107,8 @@ class ISTable
     **    duplicate rows. Note that determination of duplicate rows is not
     **    done based on all values in a row, but based on the cell values
     **    in the columns specified in this parameter.
+    **  \param[in] group -  key identifiers used for determining
+    **    duplicate rows. 
     **  \param[in] catTableName - the name of the table that is used, corresponding
     **   to the category the columns of interest belong to.
     **  \param[in] keepDuplRows - indicates whether duplicate rows should be

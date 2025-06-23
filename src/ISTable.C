@@ -626,6 +626,7 @@ unsigned int ISTable::InsertRow(const unsigned int rowIndex,
           MAX_NUM_ITTABLE_ROWS))
         {
             // Begin create new table and set the row
+            
             ITTable newTable(_orient);
             vector<string> newCol;
             newCol.push_back(string());
