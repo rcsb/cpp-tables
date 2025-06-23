@@ -626,7 +626,7 @@ unsigned int ISTable::InsertRow(const unsigned int rowIndex,
           MAX_NUM_ITTABLE_ROWS))
         {
             // Begin create new table and set the row
-            
+
             ITTable newTable(_orient);
             vector<string> newCol;
             newCol.push_back(string());
@@ -908,7 +908,7 @@ void ISTable::FindDuplicateRows(vector<pair<unsigned int, unsigned int> >& duplR
 
 // potential option for finding secondary key duplicate rows
 // should be able to contain all changes to this function
-// need to fix for key_id attribute
+// needed to add key_id values as separate vector (group), otherwise NotFoundException would be thrown due to it not existing as a column
 // FIXME
 void ISTable::FindDuplicateRowsSecondaryKey(vector<pair<unsigned int, unsigned int> >& duplRows, const vector<string>& colNames, 
 const vector<string>& group, const bool keep, const eSearchDir searchDir)
@@ -931,7 +931,7 @@ const vector<string>& group, const bool keep, const eSearchDir searchDir)
           "ISTable::FindDuplicateRowsSecondaryKey");
     }
 
-    try // tests for missing attribute names. figure out how to modify for secondary key
+    try
     {
         for (unsigned int i = 0; i < colNames.size(); ++i)
         {
@@ -980,19 +980,9 @@ const vector<string>& group, const bool keep, const eSearchDir searchDir)
             {
               //groupName.push_back(group[colI]);
               string newRow = operator()(realRowIndex, colNames[colI]);
-              //std::cout << "New row value: " << newRow << endl; // TEST TEST
-              //std::cout << "Column name: " << colNames[colI] << endl; // TEST TEST
-              //std::cout << "Group name: " << group[colI] << endl; // TEST TEST
-              if (CifString::IsUnknownValue(newRow)) 
-              {
-                row.push_back(CifString::InapplicableValue);
-                comboKey.push_back(group[colI] + " " + CifString::InapplicableValue); 
-              }
-              else
-              {
+              
                 row.push_back(operator()(realRowIndex, colNames[colI]));
                 comboKey.push_back(group[colI] + " " + operator()(realRowIndex, colNames[colI]));
-              }
             }
 
         vector<unsigned int> res;
@@ -1042,6 +1032,7 @@ const vector<string>& group, const bool keep, const eSearchDir searchDir)
         }
         
         // check if composite value is a duplicate (group name plus target value)
+        // do not like. ugly. probably bad. make better.
         vector<unsigned int> resGroupDups;
 
         for (unsigned int resI = 0; resI < res.size(); ++resI)  
@@ -1582,12 +1573,10 @@ void ISTable::Clear()
 
 unsigned int ISTable::GetColumnIndex(const string& colName) const
 {
-    //std::cout << "Checkpoint: entered GetColumnIndex function" << endl;
 
     if (colName.empty())
     {
         // Empty column name.
-        //std::cout << "Coulumn name " << colName << " is empty."<< endl;
         throw EmptyValueException("Empty column name",
           "ISTable::GetColumnIndex");
     }
@@ -1596,10 +1585,6 @@ unsigned int ISTable::GetColumnIndex(const string& colName) const
 
     if (colIndex == _colNames.size())
     {
-        for (unsigned int j = 0; j < _colNames.size(); ++j)
-        {
-            //std::cout << "Column name: " << _colNames.get_vector()[j] << endl;
-        }
         // Column not found.
         throw NotFoundException("Column \"" + colName + "\" not found in "\
           "the table \"" + _name + "\"", "ISTable::GetColumnIndex");
@@ -1616,11 +1601,6 @@ unsigned int ISTable::GetColumnIndex(const string& colName) const
 void ISTable::GetColumnsIndices(vector<unsigned int>& colIndices,
   const vector<string>& colNames)
 {
-    //std::cout << "Checkpoint: entered GetColumnIndicies function" << endl;
-    if (_name == "category_secondary_key")
-    {std::cout << "Checkpoint GetColumnIndicies: table name = " << _name << endl;}
-    
-
     colIndices.clear();
 
     try
@@ -1629,10 +1609,6 @@ void ISTable::GetColumnsIndices(vector<unsigned int>& colIndices,
         for (unsigned int index = 0; index < colNames.size(); ++index)
         {
             colIndices.push_back(GetColumnIndex(colNames[index]));
-            if (_name == "category_secondary_key")
-            {
-              std::cout << "Checkpoint GetColumnIndicies: colNames[index] = " << colNames[index] << endl;
-            }
         }
         
     }
@@ -1819,14 +1795,11 @@ void ISTable::Search(vector<unsigned int>& res, const vector<string>& targets,
 unsigned int ISTable::FindFirst(const vector<string>& targets,
   const vector<string>& colNames, const string& indexName)
 {
-
-    //std::cout << "Checkpoint: entered FindFirst function" << endl;
     if (targets.size() != colNames.size())
     {
         throw out_of_range("colNames and targets have different size "\
           "in ISTable::FindFirst");
     }
-    //std::cout << "Checkpoint FindFirst: colNames and target have same size. Continuing" << endl;
 
     if (GetNumRows() == 0)
         return(0);
