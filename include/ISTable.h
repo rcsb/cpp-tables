@@ -1069,7 +1069,7 @@ class ISTable
     **
     **  \param[out] duplRows - vector of pairs of indices, where each pair
     **    indicates a row and its duplicate row
-    **  \param[in] colNames - column names that are of inerest in determining
+    **  \param[in] colNames - column names that are of interest in determining
     **    duplicate rows. Note that determination of duplicate rows is not
     **    done based on all values in a row, but based on the cell values
     **    in the columns specified in this parameter.
@@ -1098,7 +1098,43 @@ class ISTable
     void FindDuplicateRows(std::vector<std::pair<unsigned int,
       unsigned int> >& duplRows, const std::vector<std::string>& colNames,
       const bool keepDuplRows, const eSearchDir searchDir = ISTable::eFORWARD);
-
+    /**
+    **  Finds duplicate rows and, optionally, deletes them.
+    **
+    **  \param[out] duplRows - vector of pairs of indices, where each pair
+    **    indicates a row and its duplicate row
+    **  \param[in] colNames - column names that are of interest in determining
+    **    duplicate rows. Note that determination of duplicate rows is not
+    **    done based on all values in a row, but based on the cell values
+    **    in the columns specified in this parameter.
+    **  \param[in] catTableName - the name of the table that is used, corresponding
+    **   to the category the columns of interest belong to.
+    **  \param[in] keepDuplRows - indicates whether duplicate rows should be
+    **    kept in the table (if true) or deleted (if false).
+    **  \param[in] searchDir - optional parameter which specifies search
+    **    direction. This parameter is only relevant when duplicate rows are
+    **    deleted. If \e searchDir specifies forward search, the deleted
+    **    duplicate rows will have bigger index than the original row.
+    **    If \e searchDir specifies backward search, the deleted duplicate
+    **    rows will have smaller index than the original row.
+    **
+    **  \return None
+    **
+    **  \pre Each column name in \e colNames must be non-empty
+    **  \pre Each column name in \e colNames must be present
+    **
+    **  \post If deletion of duplicate rows is requested, the number of
+    **    table rows will be reduced by the number of duplicate rows.
+    **
+    **  \exception EmptyValueException - if one or more column names in
+    **    \e colNames is empty
+    **  \exception NotFoundException - if one or more column names in
+    **    \e colNames does not exist
+    */
+    void FindDuplicateRowsSecondaryKey(std::vector<std::pair<unsigned int,
+      unsigned int> >& duplRows, const std::vector<std::string>& colNames, 
+      const std::vector<std::string>& group, const bool keepDuplRows, 
+      const eSearchDir searchDir = ISTable::eFORWARD);
     /**
     **  Retrieves case sensitivity of column names.
     **
