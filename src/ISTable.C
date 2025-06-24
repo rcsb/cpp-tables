@@ -22,7 +22,6 @@
 #include "Exceptions.h"
 #include "GenString.h"
 #include "ISTable.h"
-#include "CifString.h"
 
 
 using std::find;
@@ -626,7 +625,6 @@ unsigned int ISTable::InsertRow(const unsigned int rowIndex,
           MAX_NUM_ITTABLE_ROWS))
         {
             // Begin create new table and set the row
-
             ITTable newTable(_orient);
             vector<string> newCol;
             newCol.push_back(string());
@@ -905,180 +903,6 @@ void ISTable::FindDuplicateRows(vector<pair<unsigned int, unsigned int> >& duplR
     }
 
 }
-
-// potential option for finding secondary key duplicate rows
-// should be able to contain all changes to this function
-// needed to add key_id values as separate vector (group), otherwise NotFoundException would be thrown due to it not existing as a column
-// FIXME
-void ISTable::FindDuplicateRowsSecondaryKey(vector<pair<unsigned int, unsigned int> >& duplRows, const vector<string>& colNames, 
-const vector<string>& group, const bool keep, const eSearchDir searchDir)
-{
-    duplRows.clear();
-
-    vector<unsigned int> colIndices;
-
-    //TEST TEST
-    std::cout << "Column names used as parameters for FindDuplicateRows: " << endl;
-    for (int t = 0; t < colNames.size(); ++t)
-    {
-        std::cout << "Column name: " << colNames[t] << endl;
-    }
-    // TEST TEST
-
-    if (colNames.size() != group.size())
-    {
-        throw out_of_range("The number of item_name attributes and key_id attributes do not match in "\
-          "ISTable::FindDuplicateRowsSecondaryKey");
-    }
-
-    try
-    {
-        for (unsigned int i = 0; i < colNames.size(); ++i)
-        {
-            colIndices.push_back(GetColumnIndex(colNames[i]));
-        }
-    }
-    catch (NotFoundException& notFound)
-    {
-        notFound.AppendMessage("Column not found",
-          "ISTable::FindDuplicateRows");
-        throw;
-    }
-
-    for (unsigned int rowI = 0; rowI < GetNumRows(); rowI++)
-    {
-        unsigned int realRowIndex;
-
-        if (searchDir == eFORWARD)
-        {
-            realRowIndex = rowI;
-        }
-        else
-        {
-            realRowIndex = GetNumRows() - rowI - 1;
-        }
-
-        bool cont = false;
-        // See if this row has already been identified as duplicate and
-        // ignore it
-        for (unsigned int duplRowI = 0; duplRowI < duplRows.size(); ++duplRowI)
-        {
-            if (duplRows[duplRowI].second == realRowIndex)
-            {
-                cont = true;
-                break;
-            }
-        }
-
-        if (cont)
-            continue;
-
-        vector<string> row;
-        //vector<string> groupName;
-        vector<string> comboKey;
-        for (unsigned int colI = 0; colI < colNames.size(); ++colI) // any other circumstances which might affect value?
-            {
-              //groupName.push_back(group[colI]);
-              string newRow = operator()(realRowIndex, colNames[colI]);
-              
-                row.push_back(operator()(realRowIndex, colNames[colI]));
-                comboKey.push_back(group[colI] + " " + operator()(realRowIndex, colNames[colI]));
-            }
-
-        vector<unsigned int> res;
-
-        if (searchDir == eFORWARD)
-        {
-            if (realRowIndex != (GetNumRows() - 1)) 
-            {
-              Search(res, row, colNames, realRowIndex + 1);
-            }
-            for (int j = 0; j < res.size(); ++j)
-            {
-              //std::cout << "Result " << j << ": "<< res[j] << endl;
-            }
-                
-              //TEST TEST
-            std::cout << "Start counting Rows and Columns " << endl;
-            for (int j = 0; j < row.size(); ++j)
-            {
-              std::cout << "Row " << j << ": "<< row[j] << endl;
-              std::cout << "Column name  " << j << ": " << colNames[j] << endl;
-              std::cout << "Group name  " << j << ": " << group[j] << endl;
-            }
-            std::cout << "End counting Rows and Columns " << endl;
-            // TEST TEST
-        }
-        else
-        {
-          if (realRowIndex != 0) 
-              {
-                Search(res, row, colNames, realRowIndex - 1, eBACKWARD);
-              }
-                  //TEST TEST
-              for (int j = 0; j < res.size(); ++j)
-              {
-                //std::cout << "Result " << j << ": "<< res[j] << endl;
-              }
-              std::cout << "Start counting Rows and Columns " << endl;
-              for (int j = 0; j < row.size(); ++j)
-              {
-                //std::cout << "Row " << j << ": "<< row[j] << endl;
-                //std::cout << "Column name  " << j << ": " << colNames[j] << endl;
-                //std::cout << "Group name  " << j << ": " << group[j] << endl;
-              }
-              std::cout << "End counting Rows and Columns " << endl;
-              //TEST TEST
-        }
-        
-        // check if composite value is a duplicate (group name plus target value)
-        // do not like. ugly. probably bad. make better.
-        vector<unsigned int> resGroupDups;
-
-        for (unsigned int resI = 0; resI < res.size(); ++resI)  
-        {
-          bool identity = true;
-          for (unsigned int colI = 0; colI < colNames.size(); ++colI)
-          {
-            string comboVal = group[colI] + " " + row[colI];
-            std::cout << "Combo value to test against: " << comboKey[colI] << endl; // TEST TEST
-            std::cout << "Combo value: " << comboVal << endl; // TEST TEST
-            if (comboVal != comboKey[colI])
-            {
-              identity = false;
-            }
-            if (!identity)
-            {
-              continue;
-            }
-          }
-          if (identity)
-          {
-            resGroupDups.push_back(res[resI]);
-          }
-        }
-
-        for (unsigned int resI = 0; resI < resGroupDups.size(); ++resI) 
-        {
-            duplRows.push_back(make_pair(realRowIndex, resGroupDups[resI]));
-            std::cout << "Duplicate " << resI << ": "<< resGroupDups[resI] << ", " << realRowIndex << endl;
-        }
-    }
-
-    if ((!keep) && (!duplRows.empty()))
-    {
-        vector<unsigned int> duplRowIndices;
-
-        for (unsigned int rowI = 0; rowI < duplRows.size(); rowI++)
-        {
-            duplRowIndices.push_back(duplRows[rowI].second);
-        }
-
-        DeleteRows(duplRowIndices);
-    }
-
-}
-// Potential option for finding secondary key duplicate rows (END)
 
 
 void ISTable::UpdateCell(const unsigned int rowIndex, const string& colName,
@@ -1588,7 +1412,6 @@ unsigned int ISTable::GetColumnIndex(const string& colName) const
         // Column not found.
         throw NotFoundException("Column \"" + colName + "\" not found in "\
           "the table \"" + _name + "\"", "ISTable::GetColumnIndex");
-
     }
     else
     {
@@ -1601,16 +1424,15 @@ unsigned int ISTable::GetColumnIndex(const string& colName) const
 void ISTable::GetColumnsIndices(vector<unsigned int>& colIndices,
   const vector<string>& colNames)
 {
+
     colIndices.clear();
 
     try
     {
-      
         for (unsigned int index = 0; index < colNames.size(); ++index)
         {
             colIndices.push_back(GetColumnIndex(colNames[index]));
         }
-        
     }
 
     catch (RcsbException& rcsbException)
@@ -1795,6 +1617,7 @@ void ISTable::Search(vector<unsigned int>& res, const vector<string>& targets,
 unsigned int ISTable::FindFirst(const vector<string>& targets,
   const vector<string>& colNames, const string& indexName)
 {
+
     if (targets.size() != colNames.size())
     {
         throw out_of_range("colNames and targets have different size "\
@@ -3570,4 +3393,3 @@ bool ISTable::IsColumnInIndex(const unsigned int indexIndex,
     }
 
 }
-
